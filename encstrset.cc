@@ -3,11 +3,12 @@
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
+#include "encstrset.h"
 
 
 namespace {
 	unsigned long global_id = 0;
-	std::unordered_map <int, std::unordered_set <std::string>> encstrset;
+	std::unordered_map <unsigned long, std::unordered_set <std::string>> encstrset;
 
 	#ifdef NDEBUG
 		static const bool debug = false;
@@ -16,36 +17,36 @@ namespace {
 	#endif
 
 
-	static std::string cypher(const std::string &value, const std::string &key) {
+	std::string cypher(const std::string &value, const std::string &key) {
 		std::string result = "";
-		for (int i = 0, j = 0; i < value.size(); i++, j = (j + 1) % key.size()) {
+		for (unsigned int i = 0, j = 0; i < value.size(); i++, j = (j + 1) % key.size()) {
 			result += value[i] ^ key[j];
 		}
 		return result;
 	}
 
 
-	static char chitos(char value) {
+	char numToHex(char value) {
 		return value > 9 ? ('A' + value - 10) : ('0' + value);
 
 	}
 
 
-	static std::string binToHex(char value) {
+	std::string binToHex(char value) {
 		char a = value >> 4;
 		char b = value & 15;
 
 		std::string result = "";
-		result += chitos(a);
-		result += chitos(b);
+		result += numToHex(a);
+		result += numToHex(b);
 
 		return result;
 	}
 
 
-	static std::string strToHex(std::string &value) {
+	std::string strToHex(std::string &value) {
 		std::string result = "";
-		for (int i = 0; i < value.size(); i++) {
+		for (unsigned int i = 0; i < value.size(); i++) {
 			result += binToHex(value[i]);
 			if (i != value.size() - 1) {
 				result += " ";
@@ -55,7 +56,7 @@ namespace {
 	}
 
 
-	static void passDebugInfo(std::string info) {
+	void passDebugInfo(std::string &info) {
 		if (debug) {
 			std::cerr << info;
 		}
@@ -64,60 +65,63 @@ namespace {
 
 
 unsigned long encstrset_new() {
-	passDebugInfo("encstrset_new()\n");
+	std::string debugMessage = "encstrset_new()\n";
+	passDebugInfo(debugMessage);
 
 	encstrset.insert(make_pair(global_id++, std::unordered_set<std::string>()));
 
-	passDebugInfo(
+	debugMessage =
 		"encstrset_new: set #" +
 		std::to_string(global_id) +
-		" created\n"
-	);
+		" created\n";
+	passDebugInfo(debugMessage);
 
 	return global_id - 1;
 }
 
 
 void encstrset_delete(unsigned long id) {
-	passDebugInfo("encstrset_delete()\n");
+	std::string debugMessage = "encstrset_delete()\n";
+	passDebugInfo(debugMessage);
 
 	if (encstrset.count(id)) {
 		encstrset.erase(id);
-		passDebugInfo(
+		debugMessage = 
 			"encstrset_delete: set#" +
 			std::to_string(id) +
-			" deleted\n"
-		);
+			" deleted\n";
+		passDebugInfo(debugMessage);
 	}
 	else {
-		passDebugInfo(
+		debugMessage =
 			"encstrset_delete: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 }
 
 
 size_t encstrset_size(unsigned long id) {
-	passDebugInfo("encstrset_size(" + std::to_string(id) + ")\n");
+	std::string debugMessage = "encstrset_size(" + std::to_string(id) + ")\n";
+	passDebugInfo(debugMessage);
 
 	if (encstrset.count(id)) {
-		passDebugInfo(
+		debugMessage =
 			"encstrset_size: set #" +
 			std::to_string(id) +
 			" contains " +
 			std::to_string(encstrset[id].size()) +
-			" element(s)\n"
-		);
+			" element(s)\n";
+		passDebugInfo(debugMessage);
 		return encstrset[id].size();
 	}
 	else {
-		passDebugInfo(
+		debugMessage =
 			"encstrset_size: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 	return 0;
 }
@@ -125,18 +129,19 @@ size_t encstrset_size(unsigned long id) {
 
 //TODO: cudzyslowia wokol stringow, ale nie wokol NULL'i
 bool encstrset_insert(unsigned long id, const char *value, const char *key) {
-	passDebugInfo(
+	std::string debugMessage =
 		"encstrset_insert(" +
 		std::to_string(id) +
 		" " +
 		(!(*value) ? "NULL" : value) +
 		" " +
 		(!(*key) ? "NULL" : key) +
-		")\n"
-	);
+		")\n";
+	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
-		passDebugInfo("encstrset_insert: invalid value (NULL)\n");
+		debugMessage = "encstrset_insert: invalid value (NULL)\n";
+		passDebugInfo(debugMessage);
 		return false;
 	}
 	
@@ -150,50 +155,51 @@ bool encstrset_insert(unsigned long id, const char *value, const char *key) {
 		}
 
 		if (encstrset[id].count(code)) {
-			passDebugInfo(
+			debugMessage = 
 				"encstrset_insert: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" was already present\n"
-			);
+				"\" was already present\n";
+			passDebugInfo(debugMessage);
 		}
 		else {
 			encstrset[id].insert(code);
-			passDebugInfo(
+			debugMessage = 
 				"encstrset_insert: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" inserted\n"
-			);
+				"\" inserted\n";
+			passDebugInfo(debugMessage);
 		}
 		return true;
 	}
 	else {
-		passDebugInfo(
+		debugMessage =
 			"encstrset_insert: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 	return false;
 }
 
 
 bool encstrset_remove(unsigned long id, const char* value, const char* key) {
-	passDebugInfo(
+	std::string debugMessage =
 		"encstrset_remove(" +
 		std::to_string(id) +
 		" " +
 		(!(*value) ? "NULL" : value) +
 		" " +
 		(!(*key) ? "NULL" : key) +
-		")\n"
-	);
+		")\n";
+	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
-		passDebugInfo("encstrset_remove: invalid value (NULL)\n");
+		debugMessage = "encstrset_remove: invalid value (NULL)\n";
+		passDebugInfo(debugMessage);
 		return false;
 	}
 	
@@ -208,48 +214,49 @@ bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 
 		if (encstrset[id].count(code)) {
 			encstrset[id].erase(code);
-			passDebugInfo(
+			debugMessage =
 				"encstrset_remove: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" removed\n"
-			);
+				"\" removed\n";
+			passDebugInfo(debugMessage);
 			return true;
 		}
 		else {
-			passDebugInfo(
+			debugMessage =
 				"encstrset_remove: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" was not present\n"
-			);
+				"\" was not present\n";
+			passDebugInfo(debugMessage);
 		}
 	}
 	else {
-		passDebugInfo(
+		debugMessage =
 			"encstrset_remove: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 	return false;
 }
 
 bool encstrset_test(unsigned long id, const char* value, const char* key) {
-	passDebugInfo(
+	std::string debugMessage =
 		"encstrset_test(" +
 		std::to_string(id) +
 		" " +
 		(!(*value) ? "NULL" : value) +
 		" " +
 		(!(*key) ? "NULL" : key) +
-		")\n"
-	);
+		")\n";
+	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
-		passDebugInfo("encstrset_test: invalid value (NULL)\n");
+		debugMessage = "encstrset_test: invalid value (NULL)\n";
+		passDebugInfo(debugMessage);
 		return false;
 	}
 	
@@ -263,109 +270,109 @@ bool encstrset_test(unsigned long id, const char* value, const char* key) {
 		}
 		
 		if (encstrset[id].count(code)) {
-			passDebugInfo(
+			debugMessage =
 				"encstrset_test: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" is present\n"
-			);
+				"\" is present\n";
+			passDebugInfo(debugMessage);
 			return true;
 		}
 		else {
-			passDebugInfo(
+			debugMessage =
 				"encstrset_test: set#" +
 				std::to_string(id) +
 				", cypher \"" +
 				strToHex(code) +
-				"\" is not present\n"
-			);
+				"\" is not present\n";
+			passDebugInfo(debugMessage);
 		}
 	}
 	else {
-		passDebugInfo(
+		debugMessage = 
 			"encstrset_test: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 	return false;
 }
 
 
 void encstrset_clear(unsigned long id) {
-	passDebugInfo(
+	std::string debugMessage =
 		"encstrset_clear(" +
 		std::to_string(id) +
-		")\n"
-	);
+		")\n";
+	passDebugInfo(debugMessage);
 	
 	if (encstrset.count(id)) {
 		encstrset[id].clear();
-		passDebugInfo(
+		debugMessage =
 			"encstrset_clear: set#" +
 			std::to_string(id) +
-			" cleared\n"
-		);
+			" cleared\n";
+		passDebugInfo(debugMessage);
 	}
 	else {
-		passDebugInfo(
+		debugMessage = 
 			"encstrset_clear: set#" +
 			std::to_string(id) +
-			" does not exist\n"
-		);
+			" does not exist\n";
+		passDebugInfo(debugMessage);
 	}
 }
 
 
 void encstrset_copy(unsigned long src_id, unsigned long dst_id) {
-	passDebugInfo(
+	std::string debugMessage = 
 		"encstrset_copy(" +
 		std::to_string(src_id) +
 		" " +
 		std::to_string(dst_id) +
-		")\n"
-	);
+		")\n";
+	passDebugInfo(debugMessage);
 	
 	if (encstrset.count(src_id) && encstrset.count(dst_id)) {
 		for (auto it : encstrset[src_id]) {
 			if (encstrset[dst_id].count(it)) {
-				passDebugInfo(
+				debugMessage =
 					"encstrset_copy: cypher \"" +
 					strToHex(it) +
 					"\" was already present in set #" +
 					std::to_string(dst_id) +
-					"\n"
-				);
+					"\n";
+				passDebugInfo(debugMessage);
 			}
 			else {
 				encstrset[dst_id].insert(it);
-				passDebugInfo(
+				debugMessage = 
 					"encstrset_copy: cypher \"" +
 					strToHex(it) +
 					"\" copied from set #" +
 					std::to_string(src_id) +
 					" to set #" +
 					std::to_string(src_id) +
-					"\n"
-				);
+					"\n";
+				passDebugInfo(debugMessage);
 			}
 		}
 	}
 	else {
 		if (!encstrset.count(src_id)) {
-			passDebugInfo("encstrset_copy: set#" +
+			 debugMessage = 
+				 "encstrset_copy: set#" +
 				std::to_string(src_id) +
-				" does not exist\n"
-			);
+				" does not exist\n";
+				passDebugInfo(debugMessage);
 			return;
 		}
 		if (!encstrset.count(dst_id)) {
-			passDebugInfo(
-				"encstrset_copy: set#" +
+			debugMessage = "encstrset_copy: set#" +
 				std::to_string(dst_id) +
-				" does not exist\n"
-			);
+				" does not exist\n";
+			passDebugInfo(debugMessage);
 		}
 	}
 }
