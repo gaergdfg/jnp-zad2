@@ -61,6 +61,29 @@ namespace {
 			std::cerr << info;
 		}
 	}
+
+	
+	std::string inputToString(unsigned long& id, const char* value, const char* key)
+	{
+		std::string result = std::to_string(id) + " ";
+		if (!(*value))
+			result += "NULL";
+		else
+		{
+			std::string s1(value);
+			result += ("\"" + s1 + "\"");
+		}
+		result += " ";
+		if (!(*key))
+			result += "NULL";
+		else
+		{
+			std::string s2(key);
+			result += ("\"" + s2 + "\"");
+		}
+		result +=")\n";
+		return result;
+	}
 }
 
 
@@ -131,12 +154,7 @@ size_t encstrset_size(unsigned long id) {
 bool encstrset_insert(unsigned long id, const char *value, const char *key) {
 	std::string debugMessage =
 		"encstrset_insert(" +
-		std::to_string(id) +
-		" " +
-		(!(*value) ? "NULL" : value) +
-		" " +
-		(!(*key) ? "NULL" : key) +
-		")\n";
+		inputToString(id, value, key);
 	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
@@ -189,12 +207,7 @@ bool encstrset_insert(unsigned long id, const char *value, const char *key) {
 bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 	std::string debugMessage =
 		"encstrset_remove(" +
-		std::to_string(id) +
-		" " +
-		(!(*value) ? "NULL" : value) +
-		" " +
-		(!(*key) ? "NULL" : key) +
-		")\n";
+		inputToString(id, value, key);
 	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
@@ -246,12 +259,7 @@ bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 bool encstrset_test(unsigned long id, const char* value, const char* key) {
 	std::string debugMessage =
 		"encstrset_test(" +
-		std::to_string(id) +
-		" " +
-		(!(*value) ? "NULL" : value) +
-		" " +
-		(!(*key) ? "NULL" : key) +
-		")\n";
+		inputToString(id, value, key);
 	passDebugInfo(debugMessage);
 
 	if (!(*value)) {
