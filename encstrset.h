@@ -1,14 +1,15 @@
-#include <stddef.h>
-#include <stdbool.h>
-
 #ifndef ENCSTRSET_H
 #define ENCSTRSET_H
 
 #ifdef __cplusplus
+#include <iostream>
 namespace jnp1 {
 	extern "C" {
+#else
+#include <stdio.h>
+#include <stddef.h>
+#include <stdbool.h>
 #endif
-/*namespace jnp1 {*/
 
 	/*Tworzy nowy zbi�r i zwraca jego identyfikator.*/
 	unsigned long encstrset_new();

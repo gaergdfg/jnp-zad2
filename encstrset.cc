@@ -1,18 +1,27 @@
-#include <iostream>
 #include <string>
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
 #include "encstrset.h"
 
+
+using map_of_sets =
+	std::unordered_map <unsigned long, std::unordered_set <std::string>>;
+
+
 namespace jnp1 {
 	namespace {
-		unsigned long global_id = 0;
+		// unsigned long global_id = 0;
 		//std::unordered_map <unsigned long, std::unordered_set <std::string>> encstrset();
 		
-		std::unordered_map <unsigned long, std::unordered_set <std::string>>& encstrset() {
-			static std::unordered_map <unsigned long, std::unordered_set <std::string>>* encstrset = new std::unordered_map <unsigned long, std::unordered_set <std::string>>();
-			return *encstrset;
+		unsigned long long &global_id() {
+			static unsigned long long *res = new unsigned long long();
+			return *res;
+		}
+
+		map_of_sets &encstrset() {
+			static map_of_sets *res = new map_of_sets();
+			return *res;
 		}
 		
 		
@@ -106,16 +115,17 @@ namespace jnp1 {
 		std::string debugMessage = "encstrset_new()\n";
 		passDebugInfo(debugMessage);
 
-		std::unordered_set<std::string> new_set = std::unordered_set<std::string>();
-		encstrset().insert(make_pair(global_id, new_set));
+		encstrset().insert(
+			make_pair(global_id(), std::unordered_set<std::string>())
+		);
 
 		debugMessage =
 			"encstrset_new: set #" +
-			std::to_string(global_id) +
+			std::to_string(global_id()) +
 			" created\n";
 		passDebugInfo(debugMessage);
 
-		return global_id++;
+		return global_id()++;
 	}
 
 
