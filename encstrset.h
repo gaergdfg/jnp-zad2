@@ -4,10 +4,11 @@
 #ifndef ENCSTRSET_H
 #define ENCSTRSET_H
 
-
 #ifdef __cplusplus
-extern "C" {
+namespace jnp1 {
+	extern "C" {
 #endif
+/*namespace jnp1 {*/
 
 	/*Tworzy nowy zbi�r i zwraca jego identyfikator.*/
 	unsigned long encstrset_new();
@@ -55,7 +56,8 @@ extern "C" {
 	void encstrset_copy(unsigned long src_id, unsigned long dst_id);
 
 #ifdef __cplusplus
-}
+	}
+};
 #endif
 
 #endif /*ENCSTRSET_H*/
