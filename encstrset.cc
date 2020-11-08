@@ -18,6 +18,10 @@ namespace {
 
 
 	std::string cypher(const std::string &value, const std::string &key) {
+		if (key.empty()) {
+			return std::string(value);
+		}
+
 		std::string result = "";
 		for (unsigned int i = 0, j = 0; i < value.size(); i++, j = (j + 1) % key.size()) {
 			result += value[i] ^ key[j];
@@ -63,25 +67,30 @@ namespace {
 	}
 
 	
-	std::string inputToString(std::string& functionName, unsigned long& id, const char* value, const char* key)
-	{
+	std::string inputToString(
+		std::string& functionName,
+		unsigned long id,
+		const char* value,
+		const char* key
+	) {
 		std::string result = functionName + "(" + std::to_string(id) + ", ";
-		if (!(*value))
+
+		if (value == NULL)
 			result += "NULL";
-		else
-		{
+		else {
 			std::string s1(value);
 			result += ("\"" + s1 + "\"");
 		}
 		result += ", ";
-		if (!(*key))
+
+		if (key == NULL)
 			result += "NULL";
-		else
-		{
+		else {
 			std::string s2(key);
 			result += ("\"" + s2 + "\"");
 		}
 		result +=")\n";
+		
 		return result;
 	}
 }
@@ -91,7 +100,8 @@ unsigned long encstrset_new() {
 	std::string debugMessage = "encstrset_new()\n";
 	passDebugInfo(debugMessage);
 
-	encstrset.insert(make_pair(global_id, std::unordered_set<std::string>()));
+	std::unordered_set<std::string> new_set = std::unordered_set<std::string>();
+	encstrset.insert(make_pair(global_id, new_set));
 
 	debugMessage =
 		"encstrset_new: set #" +
@@ -104,7 +114,7 @@ unsigned long encstrset_new() {
 
 
 void encstrset_delete(unsigned long id) {
-	std::string debugMessage = "encstrset_delete()\n";
+	std::string debugMessage = "encstrset_delete(" + std::to_string(id) + ")\n";
 	passDebugInfo(debugMessage);
 
 	if (encstrset.count(id)) {
@@ -151,13 +161,12 @@ size_t encstrset_size(unsigned long id) {
 }
 
 
-//TODO: cudzyslowia wokol stringow, ale nie wokol NULL'i
 bool encstrset_insert(unsigned long id, const char *value, const char *key) {
 	std::string functionName = "encstrset_insert";
 	std::string debugMessage = inputToString(functionName, id, value, key);
 	passDebugInfo(debugMessage);
 
-	if (!(*value)) {
+	if (value == NULL) {
 		debugMessage = "encstrset_insert: invalid value (NULL)\n";
 		passDebugInfo(debugMessage);
 		return false;
@@ -165,7 +174,7 @@ bool encstrset_insert(unsigned long id, const char *value, const char *key) {
 	
 	if (encstrset.count(id)) {
 		std::string code;
-		if (!(*key)) {
+		if (key == NULL) {
 			code = std::string(value);
 		}
 		else {
@@ -209,7 +218,7 @@ bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 	std::string debugMessage = inputToString(functionName, id, value, key);
 	passDebugInfo(debugMessage);
 
-	if (!(*value)) {
+	if (value == NULL) {
 		debugMessage = "encstrset_remove: invalid value (NULL)\n";
 		passDebugInfo(debugMessage);
 		return false;
@@ -217,7 +226,7 @@ bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 	
 	if (encstrset.count(id)) {
 		std::string code;
-		if (!(*key)) {
+		if (key == NULL) {
 			code = std::string(value);
 		}
 		else {
@@ -247,7 +256,7 @@ bool encstrset_remove(unsigned long id, const char* value, const char* key) {
 	}
 	else {
 		debugMessage =
-			"encstrset_remove: set#" +
+			"encstrset_remove: set #" +
 			std::to_string(id) +
 			" does not exist\n";
 		passDebugInfo(debugMessage);
@@ -260,7 +269,7 @@ bool encstrset_test(unsigned long id, const char* value, const char* key) {
 	std::string debugMessage = inputToString(functionName, id, value, key);
 	passDebugInfo(debugMessage);
 
-	if (!(*value)) {
+	if (value == NULL) {
 		debugMessage = "encstrset_test: invalid value (NULL)\n";
 		passDebugInfo(debugMessage);
 		return false;
@@ -268,7 +277,7 @@ bool encstrset_test(unsigned long id, const char* value, const char* key) {
 	
 	if (encstrset.count(id)) {
 		std::string code;
-		if (!(*key)) {
+		if (key == NULL) {
 			code = std::string(value);
 		}
 		else {
@@ -344,7 +353,7 @@ void encstrset_copy(unsigned long src_id, unsigned long dst_id) {
 		for (auto it : encstrset[src_id]) {
 			if (encstrset[dst_id].count(it)) {
 				debugMessage =
-					"encstrset_copy: cypher \"" +
+					"encstrset_copy: copied cypher \"" +
 					strToHex(it) +
 					"\" was already present in set #" +
 					std::to_string(dst_id) +
