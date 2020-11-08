@@ -1,3 +1,5 @@
+#include <cstddef>
+
 #ifndef ENCSTRSET_H
 #define ENCSTRSET_H
 
