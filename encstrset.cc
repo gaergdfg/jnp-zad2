@@ -3,7 +3,7 @@
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
-#include "encstrset().h"
+#include "encstrset.h"
 
 namespace jnp1 {
 	namespace {
