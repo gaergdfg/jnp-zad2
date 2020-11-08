@@ -3,13 +3,19 @@
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
-#include "encstrset.h"
+#include "encstrset().h"
 
 namespace jnp1 {
 	namespace {
 		unsigned long global_id = 0;
-		std::unordered_map <unsigned long, std::unordered_set <std::string>> encstrset;
-
+		//std::unordered_map <unsigned long, std::unordered_set <std::string>> encstrset();
+		
+		std::unordered_map <unsigned long, std::unordered_set <std::string>>& encstrset() {
+			static std::unordered_map <unsigned long, std::unordered_set <std::string>>* encstrset = new std::unordered_map <unsigned long, std::unordered_set <std::string>>();
+			return *encstrset;
+		}
+		
+		
 		#ifdef NDEBUG
 			static const bool debug = false;
 		#else
@@ -101,7 +107,7 @@ namespace jnp1 {
 		passDebugInfo(debugMessage);
 
 		std::unordered_set<std::string> new_set = std::unordered_set<std::string>();
-		encstrset.insert(make_pair(global_id, new_set));
+		encstrset().insert(make_pair(global_id, new_set));
 
 		debugMessage =
 			"encstrset_new: set #" +
@@ -117,8 +123,8 @@ namespace jnp1 {
 		std::string debugMessage = "encstrset_delete(" + std::to_string(id) + ")\n";
 		passDebugInfo(debugMessage);
 
-		if (encstrset.count(id)) {
-			encstrset.erase(id);
+		if (encstrset().count(id)) {
+			encstrset().erase(id);
 			debugMessage = 
 				"encstrset_delete: set #" +
 				std::to_string(id) +
@@ -139,15 +145,15 @@ namespace jnp1 {
 		std::string debugMessage = "encstrset_size(" + std::to_string(id) + ")\n";
 		passDebugInfo(debugMessage);
 
-		if (encstrset.count(id)) {
+		if (encstrset().count(id)) {
 			debugMessage =
 				"encstrset_size: set #" +
 				std::to_string(id) +
 				" contains " +
-				std::to_string(encstrset[id].size()) +
+				std::to_string(encstrset()[id].size()) +
 				" element(s)\n";
 			passDebugInfo(debugMessage);
-			return encstrset[id].size();
+			return encstrset()[id].size();
 		}
 		else {
 			debugMessage =
@@ -172,7 +178,7 @@ namespace jnp1 {
 			return false;
 		}
 		
-		if (encstrset.count(id)) {
+		if (encstrset().count(id)) {
 			std::string code;
 			if (key == NULL) {
 				code = std::string(value);
@@ -181,7 +187,7 @@ namespace jnp1 {
 				code = cypher(value, key);
 			}
 
-			if (encstrset[id].count(code)) {
+			if (encstrset()[id].count(code)) {
 				debugMessage = 
 					"encstrset_insert: set #" +
 					std::to_string(id) +
@@ -191,7 +197,7 @@ namespace jnp1 {
 				passDebugInfo(debugMessage);
 			}
 			else {
-				encstrset[id].insert(code);
+				encstrset()[id].insert(code);
 				debugMessage = 
 					"encstrset_insert: set #" +
 					std::to_string(id) +
@@ -224,7 +230,7 @@ namespace jnp1 {
 			return false;
 		}
 		
-		if (encstrset.count(id)) {
+		if (encstrset().count(id)) {
 			std::string code;
 			if (key == NULL) {
 				code = std::string(value);
@@ -233,8 +239,8 @@ namespace jnp1 {
 				code = cypher(value, key);
 			}
 
-			if (encstrset[id].count(code)) {
-				encstrset[id].erase(code);
+			if (encstrset()[id].count(code)) {
+				encstrset()[id].erase(code);
 				debugMessage =
 					"encstrset_remove: set #" +
 					std::to_string(id) +
@@ -275,7 +281,7 @@ namespace jnp1 {
 			return false;
 		}
 		
-		if (encstrset.count(id)) {
+		if (encstrset().count(id)) {
 			std::string code;
 			if (key == NULL) {
 				code = std::string(value);
@@ -284,7 +290,7 @@ namespace jnp1 {
 				code = cypher(value, key);
 			}
 			
-			if (encstrset[id].count(code)) {
+			if (encstrset()[id].count(code)) {
 				debugMessage =
 					"encstrset_test: set #" +
 					std::to_string(id) +
@@ -322,8 +328,8 @@ namespace jnp1 {
 			")\n";
 		passDebugInfo(debugMessage);
 		
-		if (encstrset.count(id)) {
-			encstrset[id].clear();
+		if (encstrset().count(id)) {
+			encstrset()[id].clear();
 			debugMessage =
 				"encstrset_clear: set #" +
 				std::to_string(id) +
@@ -349,9 +355,9 @@ namespace jnp1 {
 			")\n";
 		passDebugInfo(debugMessage);
 		
-		if (encstrset.count(src_id) && encstrset.count(dst_id)) {
-			for (auto it : encstrset[src_id]) {
-				if (encstrset[dst_id].count(it)) {
+		if (encstrset().count(src_id) && encstrset().count(dst_id)) {
+			for (auto it : encstrset()[src_id]) {
+				if (encstrset()[dst_id].count(it)) {
 					debugMessage =
 						"encstrset_copy: copied cypher \"" +
 						strToHex(it) +
@@ -361,7 +367,7 @@ namespace jnp1 {
 					passDebugInfo(debugMessage);
 				}
 				else {
-					encstrset[dst_id].insert(it);
+					encstrset()[dst_id].insert(it);
 					debugMessage = 
 						"encstrset_copy: cypher \"" +
 						strToHex(it) +
@@ -375,7 +381,7 @@ namespace jnp1 {
 			}
 		}
 		else {
-			if (!encstrset.count(src_id)) {
+			if (!encstrset().count(src_id)) {
 				 debugMessage = 
 					 "encstrset_copy: set #" +
 					std::to_string(src_id) +
@@ -383,7 +389,7 @@ namespace jnp1 {
 					passDebugInfo(debugMessage);
 				return;
 			}
-			if (!encstrset.count(dst_id)) {
+			if (!encstrset().count(dst_id)) {
 				debugMessage = "encstrset_copy: set #" +
 					std::to_string(dst_id) +
 					" does not exist\n";
