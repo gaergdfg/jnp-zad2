@@ -12,22 +12,24 @@ using map_of_sets =
 namespace jnp1 {
 	namespace {
 		
-		/* Tworzy nowa instancje globalnej zmiennej global_id, jesli nie istnieje.
-		Zwraca globalna zmienna global_id. */
+		/* Tworzy nowa instancje globalnej zmiennej global_id, jesli nie
+		istnieje. Zwraca globalna zmienna global_id. */
 		unsigned long long &global_id() {
 			static unsigned long long *res = new unsigned long long();
 			return *res;
 		}
 
 
-		/* Tworzy nowa instancje globalnej zmiennej encstrset, jesli nie istnieje.
-		Zwraca globalna zmienna encstrset. */
+		/* Tworzy nowa instancje globalnej zmiennej encstrset, jesli nie
+		istnieje. Zwraca globalna zmienna encstrset. */
 		map_of_sets &encstrset() {
 			static map_of_sets *res = new map_of_sets();
 			return *res;
 		}
 		
 		
+		/* Zmienna okreslajaca, czy program bedzie wypisywal informacje
+		diagnostyczne. */
 		#ifdef NDEBUG
 			static const bool debug = false;
 		#else
@@ -35,28 +37,34 @@ namespace jnp1 {
 		#endif
 
 
-		/* Szyfruje (deszyfruje) dane zawarte w value za pomoca klucza key metoda xorowania bitow.
-		Zwraca zaszyfrowana (odszyfrowana) wiadomosc. */
+		/* Szyfruje (deszyfruje) dane zawarte w value za pomoca klucza key
+		metoda XORowania bitow. Zwraca zaszyfrowana (odszyfrowana) wiadomosc. */
 		std::string cypher(const std::string &value, const std::string &key) {
 			if (key.empty()) {
 				return std::string(value);
 			}
 
 			std::string result = "";
-			for (unsigned int i = 0, j = 0; i < value.size(); i++, j = (j + 1) % key.size()) {
+			for (
+				unsigned int i = 0, j = 0; 
+				i < value.size();
+				i++, j = (j + 1) % key.size()
+			) {
 				result += value[i] ^ key[j];
 			}
 			return result;
 		}
 
 
-		/* Zamienia wartosc value na odpowiadajacy mu znak w systemie szesnastkowym. */
+		/* Zamienia wartosc value na odpowiadajacy mu znak w systemie
+		szesnastkowym. */
 		char numToHex(char value) {
 			return value > 9 ? ('A' + value - 10) : ('0' + value);
 		}
 
 
-		/* Konwertuje pojedynczy znak na jego wartosc szestnastkowa i go zwraca. */
+		/* Konwertuje pojedynczy znak na jego wartosc szestnastkowa i go
+		zwraca. */
 		std::string binToHex(char value) {
 			char a = value >> 4;
 			char b = value & 15;
@@ -69,7 +77,8 @@ namespace jnp1 {
 		}
 
 
-		/* Konwertuje, znak po znaku, string na jego szestanstkowy odpowiednik i go zwraca. */
+		/* Konwertuje, znak po znaku, string na jego szestanstkowy odpowiednik i
+		go zwraca. */
 		std::string strToHex(std::string &value) {
 			std::string result = "";
 			for (unsigned int i = 0; i < value.size(); i++) {
@@ -141,7 +150,10 @@ namespace jnp1 {
 
 
 	void encstrset_delete(unsigned long id) {
-		std::string debugMessage = "encstrset_delete(" + std::to_string(id) + ")\n";
+		std::string debugMessage =
+			"encstrset_delete(" +
+			std::to_string(id) +
+			")\n";
 		passDebugInfo(debugMessage);
 
 		if (encstrset().count(id)) {
@@ -163,7 +175,10 @@ namespace jnp1 {
 
 
 	size_t encstrset_size(unsigned long id) {
-		std::string debugMessage = "encstrset_size(" + std::to_string(id) + ")\n";
+		std::string debugMessage =
+			"encstrset_size(" +
+			std::to_string(id) +
+			")\n";
 		passDebugInfo(debugMessage);
 
 		if (encstrset().count(id)) {
@@ -189,7 +204,11 @@ namespace jnp1 {
 	}
 
 
-	bool encstrset_insert(unsigned long id, const char *value, const char *key) {
+	bool encstrset_insert(
+		unsigned long id, 
+		const char *value,
+		const char *key
+	) {
 		std::string functionName = "encstrset_insert";
 		std::string debugMessage = inputToString(functionName, id, value, key);
 		passDebugInfo(debugMessage);
@@ -242,7 +261,11 @@ namespace jnp1 {
 	}
 
 
-	bool encstrset_remove(unsigned long id, const char* value, const char* key) {
+	bool encstrset_remove(
+		unsigned long id,
+		const char* value,
+		const char* key
+	) {
 		std::string functionName = "encstrset_remove";
 		std::string debugMessage = inputToString(functionName, id, value, key);
 		passDebugInfo(debugMessage);
