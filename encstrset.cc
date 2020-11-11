@@ -216,6 +216,7 @@ namespace jnp1 {
 					strToHex(code) +
 					"\" was already present\n";
 				passDebugInfo(debugMessage);
+				return false;
 			}
 			else {
 				encstrset()[id].insert(code);
@@ -226,8 +227,8 @@ namespace jnp1 {
 					strToHex(code) +
 					"\" inserted\n";
 				passDebugInfo(debugMessage);
+				return true;
 			}
-			return true;
 		}
 		else {
 			debugMessage =
