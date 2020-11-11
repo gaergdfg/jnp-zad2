@@ -167,6 +167,7 @@ namespace jnp1 {
 		passDebugInfo(debugMessage);
 
 		if (encstrset().count(id)) {
+			unsigned long res = encstrset()[id].size();
 			debugMessage =
 				"encstrset_size: set #" +
 				std::to_string(id) +
@@ -174,7 +175,7 @@ namespace jnp1 {
 				std::to_string(encstrset()[id].size()) +
 				" element(s)\n";
 			passDebugInfo(debugMessage);
-			return encstrset()[id].size();
+			return res;
 		}
 		else {
 			debugMessage =
