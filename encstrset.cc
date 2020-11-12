@@ -66,8 +66,11 @@ namespace jnp1 {
 		/* Konwertuje pojedynczy znak na jego wartosc szestnastkowa i go
 		zwraca. */
 		std::string binToHex(char value) {
-			char a = (unsigned char)value >> 4; /* Wartoœæ utorzona z 4 najbardziej znacz¹cych bitów */
-			char b = (unsigned char)value & 15; /* Wartoœæ utorzona z 4 najmniej znacz¹cych bitów */
+			/* Wartoï¿½ï¿½ utorzona z 4 najbardziej znaczï¿½cych bitï¿½w */
+			char a = (unsigned char)value >> 4;
+			
+			/* Wartoï¿½ï¿½ utorzona z 4 najmniej znaczï¿½cych bitï¿½w */
+			char b = (unsigned char)value & 15;
 
 			std::string result = "";
 			result += numToHex(a);
